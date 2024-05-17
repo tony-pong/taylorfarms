@@ -1,0 +1,71 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-5">
+    <div class="mr-auto place-self-center w-full md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
+        <h2 class="mb-4 text-4xl font-bold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
+            Product Shelf Life Failures
+        </h2>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            After the product has been made a sample is kept aside. On the last day after expiry date, the sample is taken to see how well the component pieces held up....
+        </p>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            Below we have 2 charts showing the cumulative failures of various products over time. The animation goes back over 2 years.
+        </p>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            The chart on top shows the running total of the top 20 items at any given time.
+        </p>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            The chart on the bottom shows the total per month.
+        </p>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            There are also buttons to start, stop and reload the individual charts.
+        </p>
+    </div>
+</div>
+
+<div class="bg-gray-100 dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+        <canvas id="racingChart"></canvas>
+        <div class="mt-4">
+            <button id="cumulativeToggleButton" class="bg-blue-500 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300">
+                Stop/Start Animation
+            </button>
+            <button id="cumulativeBackButton" class="bg-gray-500 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 ml-4 rounded dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300">
+                Go Back One Step
+            </button>
+            <button id="cumulativeReloadButton" class="bg-gray-500 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 ml-4 rounded dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300">
+                Reload Chart
+            </button>
+
+
+        </div>
+    </div>
+</div>
+
+<div class="mt-8 bg-gray-100 dark:bg-gray-800">
+    <div class="container mx-auto px-4">
+        <canvas id="monthlyChart"></canvas>
+        <div class="mt-4">
+            <button id="monthlyToggleButton" class="bg-blue-500 hover:bg-blue-600 text-gray-200 font-bold py-2 px-4 rounded dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300">
+                Stop/Start Monthly Animation
+            </button>
+            <button id="monthlyBackButton" class="bg-gray-500 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 ml-4 rounded dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300">
+                Go Back One Month
+            </button>
+            <button id="monthlyReloadButton" class="bg-gray-500 hover:bg-gray-600 text-gray-200 font-bold py-2 px-4 ml-4 rounded dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300">
+                Reload Chart
+            </button>
+
+        </div>
+    </div>
+</div>
+
+<!-- Include Chart.js via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'customscripts/failures_racing_bar.js' %}"></script>
+
+
+
+{% endblock content %}

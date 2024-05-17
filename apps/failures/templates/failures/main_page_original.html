@@ -1,0 +1,183 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+
+{% block content %}
+<head>
+    <meta charset="UTF-8">
+    <title>Failure Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+
+
+  <style>
+    #chart-container {
+        width: 100%; /* Full width to use the container space */
+        overflow-x: auto; /* Enable horizontal scrolling */
+        padding: 10px; /* Padding for aesthetic spacing */
+        border: 1px solid #ccc; /* Adds a light grey border around the chart */
+
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: Adds shadow for a 3D effect */
+        background-color: #fff; /* Optional: Sets a white background for the chart container */
+        margin-bottom: 20px;
+    }
+</style>
+<style>
+    #table-container {
+        width: 100%; /* Adjusts the width to use the container space effectively */
+        overflow-x: auto; /* Allows horizontal scrolling if the table is wide */
+        padding: 10px; /* Adds padding inside the container for aesthetic spacing */
+        border: 1px solid #ccc; /* Adds a light grey border around the table container */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Optional: Adds a subtle shadow for depth */
+        background-color: #fff; /* Sets a white background for the table container */
+        margin-bottom: 20px; /* Adds space below the container */
+    }
+</style>
+
+</head>
+<body class="bg-gray-100">
+   <div>
+    <div class="container mx-auto p-4">
+        <div id="chart-container" class="shadow-lg bg-white p-3 rounded-lg">
+            <div id="chart"></div>
+
+        </div>
+   <div class="container mx-auto p-4">
+    <div id="table-container" class="shadow-lg bg-white p-3 rounded-lg">
+        <!-- Detailed table goes here -->
+        {% include 'failures/detailed_table.html' %}
+    </div>
+</div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+
+    <script>
+        // Fetch chart data and render ApexChart
+        fetch('/failures/chart-data/')
+            .then(response => response.json())
+            .then(data => {
+                var totalBarWidth = data.series[0].data.length * 40; // Calculate total width based on the number of bars
+                var options = {
+                    chart: {
+                        type: 'bar',
+                        height: 500, // Fixed height for the chart
+                        width: totalBarWidth > window.innerWidth ? totalBarWidth + 'px' : '100%' // Set width based on number of data points
+                    },
+                    plotOptions: {
+                        bar: {
+                            horizontal: false, // Change to vertical bars
+                            barWidth: '40px', // Minimum bar width
+                            distributed: true // This makes bars wider and more evenly spaced
+                        }
+                    },
+                    dataLabels: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Total Failures',
+                        align: 'left',
+                        margin: 20,
+                        style: {
+                            fontSize: '20px',
+                            color:  '#263238'
+                        }
+                    },
+                    series: [{
+                        name: 'Total Failures',
+                        data: data.series[0].data
+                    }],
+                    xaxis: {
+                        categories: data.categories
+                    },
+                    legend: {
+                        show: false
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: '100%'
+                            },
+                            legend: {
+                                show: false
+                            }
+                        }
+                    }]
+                };
+                var chart = new ApexCharts(document.querySelector("#chart"), options);
+                chart.render();
+            });
+    </script>
+<script>
+// This is the new script
+window.onload = function() {
+    const url = "{% url 'ajax_filter_data' %}";
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        const commoditySelect = document.getElementById('commodity');
+        const usernameSelect = document.getElementById('user_name');
+
+        // Clear existing options and append new ones
+        commoditySelect.innerHTML = '<option value="">All Commodities</option>';
+        data.commodities.forEach(commodity => {
+            commoditySelect.innerHTML += `<option value="${commodity}">${commodity}</option>`;
+        });
+
+        usernameSelect.innerHTML = '<option value="">All Users</option>';
+        data.usernames.forEach(username => {
+            usernameSelect.innerHTML += `<option value="${username}">${username}</option>`;
+        });
+
+    })
+    .catch(error => console.error('Error fetching data:', error));
+}
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('filter-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+
+        // Collect all selected options for multi-select fields
+        document.querySelectorAll('#commodity option:checked').forEach(option => {
+            formData.append('commodity', option.value);
+        });
+
+        document.querySelectorAll('#user_name option:checked').forEach(option => {
+            formData.append('user_name', option.value);
+        });
+
+        const url = "{% url 'ajax_filter_data' %}";
+
+        fetch(url + '?' + new URLSearchParams(formData))
+        .then(response => response.json())
+        .then(data => {
+            updateTable(data);
+            // Optionally update other parts of the page if needed
+        })
+        .catch(error => console.error('Error fetching data:', error));
+    });
+
+    function updateTable(data) {
+        const tableBody = document.querySelector('#table-body');
+        tableBody.innerHTML = '';  // Clear existing table rows
+        data.records.forEach(record => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${record.item_number_description}</td>
+                <td>${record.date}</td>
+                <td>${record.user_name}</td>
+                <td>${record.commodity}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+});
+
+</script>
+{% endblock %}

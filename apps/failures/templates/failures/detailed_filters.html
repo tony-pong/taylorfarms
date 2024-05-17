@@ -1,0 +1,72 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-5">
+    <div class="mr-auto place-self-center">
+            <h2 class="max-w-2xl mb-4 text-4xl font-bold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
+                This is the Shelf Life Failures Details Page
+            </h2>
+            <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+                You can filter the data using the options below
+            </p>
+    </div>
+
+
+    <!-- Filter Section -->
+<!-- Filter Section -->
+<div class="mb-4 p-4 bg-gray-800 rounded-lg">
+    <div class="flex flex-wrap justify-between items-start">
+        <div class="flex items-center mr-4 mb-2">
+            <label for="date_start" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mr-2">Start Date</label>
+            <input type="date" id="date_start" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+        </div>
+        <div class="flex items-center mr-4 mb-2">
+            <label for="date_end" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mr-2">End Date</label>
+            <input type="date" id="date_end" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+        </div>
+        <div class="flex items-center mr-4 mb-2">
+            <label for="user_name_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mr-2">User Name</label>
+            <select id="user_name_filter" multiple class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" size="2">
+                <option value="all">All Supervisors</option>
+                <!-- User names options will be populated here -->
+            </select>
+        </div>
+        <div class="flex items-center mr-4 mb-2">
+            <label for="commodity_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mr-2">Commodity</label>
+            <select id="commodity_filter" multiple class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" size="2">
+                <option value="all">All Commodities</option>
+                <!-- Commodities options will be populated here -->
+            </select>
+        </div>
+        <div class="flex items-center mr-4 mb-2">
+            <label for="customer_filter" class="block text-sm font-medium text-gray-700 dark:text-gray-200 mr-2">Customer</label>
+            <select id="customer_filter" multiple class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" size="2">
+                <option value="all">All Customers</option>
+                <!-- Customer options will be populated here -->
+            </select>
+        </div>
+        <div class="flex items-center mt-2">
+            <button id="apply_filters" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 mr-2">
+                Apply Filters
+            </button>
+            <button id="clear_filters" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                Clear Filters
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+
+    <!-- Chart Display -->
+ <div id="chart" class="mx-auto p-4 bg-gray-800 rounded-lg w-full md:w-3/4 lg:w-1/2" style="height: auto;">
+    <!-- Chart will render here -->
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="{% static 'customscripts/failures_filter.js' %}"></script>
+{% endblock %}

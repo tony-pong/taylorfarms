@@ -1,0 +1,53 @@
+<div>
+    <h2>Detailed Records</h2>
+   <form id="filter-form" method="GET" class="mb-4">
+            <div class="mb-2">
+                <label for="date_start" class="block text-sm font-medium text-gray-700">Start Date</label>
+                <input type="date" name="date_start" id="date_start" class="border p-2 mr-2" value="{{ request.GET.date_start }}">
+            </div>
+            <div class="mb-2">
+                <label for="date_end" class="block text-sm font-medium text-gray-700">End Date</label>
+                <input type="date" name="date_end" id="date_end" class="border p-2 mr-2" value="{{ request.GET.date_end }}">
+            </div>
+
+        <select name="commodity" id="commodity" class="border p-2 mr-2" multiple>
+            <option value="">All Commodities</option>
+            {% for commodity in commodities %}
+            <option value="{{ commodity }}" {% if commodity in selected_commodities %}selected{% endif %}>{{ commodity }}</option>
+            {% endfor %}
+        </select>
+
+        <select name="user_name" id="user_name" class="border p-2 mr-2" multiple>
+            <option value="">All Users</option>
+            {% for username in usernames %}
+            <option value="{{ username }}" {% if username in selected_usernames %}selected{% endif %}>{{ username }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Submit Filter</button>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Item Description</th>
+                <th>Date</th>
+                <th>User Name</th>
+                <th>Commodity</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+            {% for record in records %}
+            <tr>
+                <td>{{ record.item_number_description }}</td>
+                <td>{{ record.date }}</td>
+                <td>{{ record.user_name }}</td>
+                <td>{{ record.commodity }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4">No records found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

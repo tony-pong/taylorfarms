@@ -1,0 +1,43 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+    <div class="container mx-auto px-4">
+        <div class="mr-auto place-self-center">
+            <h2 class="max-w-2xl mb-4 text-4xl font-bold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
+                This is the Product Shelf Life test Failures data snapshot page
+            </h2>
+            <p class="max-w-2xl mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+                Here you can view different snapshot failures organized in different ways
+            </p>
+        </div>
+
+        <div class="grid grid-cols-3 mb-8">
+            <div id="this-month-failure-snapshot-1" class="gap-4 p-4 shadow rounded-lg bg-white">
+                <!-- Chart will render inside this div -->
+            </div>
+            <div id="this-month-failure-snapshot-2" class="gap-4 p-4 shadow rounded-lg bg-white">
+                <!-- Chart will render inside this div -->
+            </div>
+            <div id="this-month-failure-snapshot-3" class="gap-4 p-4 shadow rounded-lg bg-white">
+                <!-- Chart will render inside this div -->
+            </div>
+        </div>
+        <!-- New row for commodity charts -->
+        <div class="grid grid-cols-3 mb-8">
+            <div id="this-month-failure-snapshot-6" class="gap-4 p-4 shadow rounded-lg bg-white">
+                <!-- Commodity chart will render inside this div -->
+            </div>
+            <div id="this-month-failure-snapshot-5" class="gap-4 p-4 shadow rounded-lg bg-white">
+                <!-- Commodity chart will render inside this div -->
+            </div>
+            <div id="this-month-failure-snapshot-4" class="gap-4 p-4 shadow rounded-lg bg-white">
+                <!-- Commodity chart will render inside this div -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="{% static 'customscripts/failures.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-5">
+    <div class="mr-auto place-self-center w-full md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
+        <h2 class="mb-4 text-4xl font-bold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
+            Product Shelf Life Failures (Year over Year)
+        </h2>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            Below we have 2 charts comparing the failure by month Year over Year.
+        </p>
+    </div>
+
+    <!-- Existing Chart Display -->
+    <div class="mt-8 bg-gray-400 dark:bg-gray-800 p-4 rounded">
+        <div id="rolling-yoy-chart" class="mx-auto" style="width: 95%;">
+            <!-- Existing Chart will render here -->
+        </div>
+    </div>
+
+    <!-- Space between charts -->
+    <div class="my-12">
+        <!-- Space element -->
+    </div>
+
+    <!-- New Filter and Chart Display -->
+    <div class="mt-8 bg-gray-400 dark:bg-gray-800 p-4 rounded">
+        <form id="commodity-form" class="max-w-lg mx-auto">
+<div class="flex items-center">
+    <div class="mr-4">
+        <label for="commodity-filter" class="block text-sm font-medium text-gray-900 dark:text-white mb-1">Select Commodities:</label>
+            <select id="commodity-filter"  multiple class="block w-full p-2 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" size="2">
+            <!-- Commodities options will be dynamically populated -->
+        </select>
+    </div>
+    <div>
+        <button type="submit" class="px-4 py-2 bg-red-600   text-white font-bold rounded mr-2">Apply Filter</button>
+        <button id="clear-filter" type="button" class="px-4 py-2 bg-red-600 text-white font-bold rounded">Clear Filter</button>
+    </div>
+</div>
+        </form>
+        <div id="rolling-yoy-chart-filtered" class="mx-auto" style="width: 95%;">
+            <!-- Filtered Chart will render here -->
+        </div>
+    </div>
+</div>
+
+<!-- Include ApexCharts via CDN -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<!-- Include the custom script that initializes the existing chart -->
+<script src="{% static 'customscripts/failures_yoy.js' %}"></script>
+<!-- Include the new custom script for the filtered chart -->
+<script src="{% static 'customscripts/failures_yoy_filtered.js' %}"></script>
+
+{% endblock content %}

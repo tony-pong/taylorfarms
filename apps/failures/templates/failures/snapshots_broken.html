@@ -1,0 +1,56 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+</head>
+
+<body>
+    <div id="chart-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/failures/snapshot_shelflife_this_month/')
+                .then(response => response.json())
+                .then(data => {
+                    const { title, labels, counts } = data;
+
+                    const options = {
+                        chart: {
+                            type: 'bar',
+                            height: 500,
+                            title: {
+                                text: title,
+                                align: 'left'
+                            }
+                        },
+                        plotOptions: {
+                            bar: {
+                                horizontal: false,
+                            }
+                        },
+                        series: [{
+                            name: 'Failure Count',
+                            data: counts
+                        }],
+                        xaxis: {
+                            categories: labels,
+                            title: {
+                                text: 'Product'
+                            }
+                        },
+                        yaxis: {
+                            title: {
+                                text: 'Failure Count'
+                            }
+                        }
+                    };
+
+                    const chart = new ApexCharts(document.querySelector("#chart-container"), options);
+                    chart.render();
+                });
+        });
+    </script>
+</body>
+{% endblock %}
