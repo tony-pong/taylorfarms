@@ -1,7 +1,21 @@
 
-from django.http import JsonResponse
-from .models import ProductEvaluation
+
+from django.shortcuts import render
 from datetime import datetime, timedelta
+from django.http import JsonResponse
+from django.db.models import Avg, FloatField
+from django.db.models.functions import Cast
+from .models import ProductEvaluation
+from django.utils.timezone import make_aware
+
+
+
+
+# renders the main_page html
+
+
+def product_evaluation_main_page(request):
+    return render(request, 'main_page.html')
 
 # helper function for main product_evaluation_summary function
 def calc_fail_percentage(data):
@@ -98,3 +112,62 @@ def product_evaluation_summary(request):
 
     return JsonResponse(summary_data, safe=False)
 
+
+
+
+##### for monthly plot
+
+import json
+from datetime import datetime, timedelta
+from django.http import JsonResponse
+from django.db.models import Count, Q
+from django.db.models.functions import TruncMonth
+from django.utils.timezone import make_aware, is_naive
+from .models import ProductEvaluation
+
+def make_aware_if_naive(dt):
+    return make_aware(dt) if is_naive(dt) else dt
+
+def get_monthly_fail_percentages():
+    now = datetime.now()
+    first_day_of_current_month = make_aware_if_naive(now.replace(day=1))
+    last_day_of_current_month = make_aware_if_naive((first_day_of_current_month + timedelta(days=32)).replace(day=1) - timedelta(days=1))
+    first_day_of_last_12_months = first_day_of_current_month - timedelta(days=365)
+
+    # Generate the last 12 months
+    months = [(first_day_of_current_month - timedelta(days=i*30)).strftime('%Y-%m') for i in range(12)]
+    months = sorted(list(set(months)), reverse=True)  # Ensure uniqueness and order, most recent first
+
+    fail_percentages = {}
+
+    # Get all distinct asset descriptions
+    asset_descriptions = ProductEvaluation.objects.values_list('asset_description', flat=True).distinct()
+
+    for asset in asset_descriptions:
+        asset_data = ProductEvaluation.objects.filter(
+            asset_description=asset,
+            date__gte=first_day_of_last_12_months,
+            date__lte=last_day_of_current_month
+        ).annotate(month=TruncMonth('date')).values('month').annotate(
+            total=Count('id'),
+            fails=Count('id', filter=Q(result='Fail'))
+        ).order_by('month')
+
+        monthly_data = {month['month'].strftime('%Y-%m'): (month['fails'] / month['total']) * 100 for month in asset_data}
+
+        fail_percentages[asset] = [
+            {'month': month, 'fail_percentage': round(monthly_data.get(month, 0), 2)}
+            for month in months
+        ]
+
+    # Remove asset descriptions with all zero values
+    filtered_fail_percentages = {
+        asset: data for asset, data in fail_percentages.items()
+        if any(item['fail_percentage'] > 0 for item in data)
+    }
+
+    return filtered_fail_percentages
+
+def product_evaluation_chart(request):
+    data = get_monthly_fail_percentages()
+    return JsonResponse(data, safe=False)

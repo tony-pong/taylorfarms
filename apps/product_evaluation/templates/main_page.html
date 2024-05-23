@@ -1,0 +1,103 @@
+{% extends "layouts/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    #product-evaluation-table {
+        font-size: 0.9em;
+    }
+</style>
+
+<div class="container mx-auto px-4 py-5">
+    <div class="mr-auto place-self-center w-full md:max-w-3xl lg:max-w-4xl xl:max-w-6xl">
+        <h2 class="mb-4 text-4xl font-bold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
+            Product Evaluation Samples
+        </h2>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            After the product has been made a sample is kept aside. On the last day after expiry date, the sample is taken to see how well the component pieces held up....
+        </p>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            Below we have 2 charts showing Produce Evaluation Sample failures going back a couple of years
+        </p>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            The chart on top shows the failure rate of the different lines in the facility.
+        </p>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            The chart on the bottom shows different metrics
+        </p>
+
+    </div>
+</div>
+<div class="container mx-auto px-4 py-5">
+    <div id="product-evaluation-chart" class="bg-white dark:bg-gray-800 shadow-md rounded my-6">
+        <!-- Chart will be displayed here -->
+    </div>
+</div>
+
+    <div>
+        <p class="mb-6 font-light text-gray-500 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400">
+            The chart on the below shows breakdown of the failure rate using different timescales
+        </p>
+
+    </div>
+<div class="container mx-auto px-4 py-5">
+    <table id="product-evaluation-table" class="display bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200">
+        <thead>
+            <tr>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Asset</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Most Recent Date Sampled</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Pass Count</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Fail Count</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Daily Fail</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Week Range</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Week Fail</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Month Range</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Month Fail</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">YTD Range</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">YTD Fail</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Prev Year Range</th>
+                <th class="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold">Prev Year Fail</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="bg-white hover:bg-gray-100">
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+                <td class="text-gray-700"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+
+{% endblock content %}
+
+{% block extra_js %}
+<!-- ApexCharts CDN -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<!-- Custom Script -->
+<script src="{% static 'customscripts/product_evaluation_chart.js' %}"></script>
+<script src="{% static 'customscripts/product_evaluation_table.js' %}"></script>
+
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+{% endblock extra_js %}
