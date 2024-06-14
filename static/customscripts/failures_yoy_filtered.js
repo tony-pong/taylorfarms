@@ -4,23 +4,24 @@ document.addEventListener('DOMContentLoaded', function () {
         { name: 'Last 12 Months', data: [] }
     ];
 
-    function mapData(data, monthNames) {
-        return monthNames.map(monthName => {
-            const item = data.find(item => {
-                const itemDate = new Date(item.month);
-                return itemDate.toLocaleString('default', { month: 'short' }) === monthName;
-            });
-            return item ? item.total : null;
-        });
+function getXAxisLabels() {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const currentDate = new Date();
+    const currentMonthIndex = currentDate.getMonth();
+    const xAxisLabels = [];
+
+    for (let i = 1; i <= 12; i++) {
+        const index = (currentMonthIndex - i + 12) % 12;
+        xAxisLabels.push(monthNames[index]);
     }
-function getMonthNames(data) {
-    const monthNames = data.recent_data.map(item => {
-        const itemDate = new Date(item.month);
-        return itemDate.toLocaleString('default', { month: 'short' });
-    });
-    return monthNames;
+
+    return xAxisLabels.slice(0, -1); // Remove the last element (current month)
 }
-    function getChartOptions(chartData, monthNames) {
+    function mapData(data) {
+        return data.slice(1).map(item => item.total);
+    }
+
+    function getChartOptions(chartData, xAxisLabels) {
         let mainChartColors = {
             borderColor: document.documentElement.classList.contains('dark') ? '#374151' : '#F3F4F6',
             labelColor: document.documentElement.classList.contains('dark') ? '#9CA3AF' : '#6B7280',
@@ -38,7 +39,6 @@ function getMonthNames(data) {
                 },
                 background: mainChartColors.background
             },
-
             series: chartData.map(series => ({
                 name: series.name,
                 data: series.data
@@ -52,7 +52,7 @@ function getMonthNames(data) {
             },
             xaxis: {
                 type: 'category',
-                categories: monthNames
+                categories: xAxisLabels
             },
             yaxis: {
                 labels: {
@@ -87,81 +87,82 @@ function getMonthNames(data) {
         try {
             let response = await fetch(`/failures/rolling-yoy-data-filtered/?${params.toString()}`);
             let data = await response.json();
-            console.log('Fetched data:', data); // Check if the data is fetched correctly
+            console.log('Fetched data:', data);
 
-            const monthNames = getMonthNames(data);
-            const recentDataProcessed = mapData(data.recent_data, monthNames);
-            const previousDataProcessed = mapData(data.previous_data, monthNames);
+            const xAxisLabels = getXAxisLabels();
+            const recentDataProcessed = mapData(data.recent_data);
+            const previousDataProcessed = mapData(data.previous_data);
 
             chartData = [
                 { name: 'Previous 12-24 Months', data: previousDataProcessed },
                 { name: 'Last 12 Months', data: recentDataProcessed }
             ];
 
-            chart.updateOptions(getChartOptions(chartData, monthNames));
+            console.log('Chart Data:', chartData);
+            console.log('X-Axis Labels:', xAxisLabels);
+
+            chart.updateOptions(getChartOptions(chartData, xAxisLabels));
             chart.updateSeries(chartData, false);
 
-let dropdown = document.getElementById('commodity-filter');
-// Clear existing options
-dropdown.innerHTML = '';
+            let dropdown = document.getElementById('commodity-filter');
+            dropdown.innerHTML = '';
 
-// Sort the commodities alphabetically
-const sortedCommodities = data.commodities.sort();
+            const sortedCommodities = data.commodities.sort();
 
-for (let commodity of sortedCommodities) {
-    if (commodity !== null) {
-        let option = document.createElement('option');
-        option.text = commodity;
-        option.value = commodity;
-        dropdown.add(option);
-    }
-}
+            for (let commodity of sortedCommodities) {
+                if (commodity !== null) {
+                    let option = document.createElement('option');
+                    option.text = commodity;
+                    option.value = commodity;
+                    dropdown.add(option);
+                }
+            }
         } catch (error) {
             console.error('Error loading the chart data:', error);
         }
     }
 
-async function initializeChart() {
-    const chartElement = document.getElementById('rolling-yoy-chart-filtered');
-    console.log('Chart element:', chartElement); // Check if the chart element is found
+    async function initializeChart() {
+        const chartElement = document.getElementById('rolling-yoy-chart-filtered');
+        console.log('Chart element:', chartElement);
 
-    if (!chartElement) {
-        console.error('Chart element not found on the page.');
-        return;
-    }
-
-    const chart = new ApexCharts(chartElement, {
-        chart: {
-            type: 'bar',
-            height: 420
-        },
-        series: [],
-        xaxis: {
-            categories: []
+        if (!chartElement) {
+            console.error('Chart element not found on the page.');
+            return;
         }
-    });
 
-    chart.render();
+        const chart = new ApexCharts(chartElement, {
+            chart: {
+                type: 'bar',
+                height: 420
+            },
+            series: [],
+            xaxis: {
+                categories: []
+            }
+        });
 
-    const filterForm = document.getElementById('commodity-form');
-    filterForm.addEventListener('submit', function (event) {
-        event.preventDefault();
-        fetchChartData(chart);
-    });
+        chart.render();
 
-    const clearFilterButton = document.getElementById('clear-filter');
-    clearFilterButton.addEventListener('click', function () {
-        const filterElement = document.getElementById('commodity-filter');
-        filterElement.selectedIndex = -1;
-        fetchChartData(chart);
-    });
+        const filterForm = document.getElementById('commodity-form');
+        filterForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            fetchChartData(chart);
+        });
 
-    document.addEventListener('dark-mode', function () {
-        chart.updateOptions(getChartOptions(chartData, chart.w.globals.categoryLabels));
-    });
+        const clearFilterButton = document.getElementById('clear-filter');
+        clearFilterButton.addEventListener('click', function () {
+            const filterElement = document.getElementById('commodity-filter');
+            filterElement.selectedIndex = -1;
+            fetchChartData(chart);
+        });
 
-    await fetchChartData(chart);
-}
+        document.addEventListener('dark-mode', function () {
+            chart.updateOptions(getChartOptions(chartData, chart.w.globals.categoryLabels));
+        });
+
+        await fetchChartData(chart);
+    }
 
     initializeChart();
 });

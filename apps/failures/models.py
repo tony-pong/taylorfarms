@@ -1,6 +1,7 @@
 
 from django.db import models
 from django.http import JsonResponse
+from django.utils import timezone
 
 
 #this is the aggregated failures table
@@ -16,15 +17,42 @@ class GrossFailure(models.Model):
 
 
 #this is the individual failure records for flexible pulls
+from django.db import models
+
+# This is the individual failure records for flexible pulls
 class FailureRecord(models.Model):
     item_number_description = models.CharField(max_length=255)
-    date = models.DateField()
+    date = models.DateTimeField()  # Assuming the existing date column is DateTimeField
     user_name = models.CharField(max_length=100)
     commodity = models.CharField(max_length=255, blank=True, null=True)  # Assuming commodity is stored separately
     customer = models.CharField(max_length=30, default='unknown', blank=True, null=False)
+    submitted_date = models.DateField(blank=True, null=True)  # New column to store date only
 
     def __str__(self):
         return f"{self.item_number_description} - {self.user_name} on {self.date}"
+
+# This is all the failure records including pass and fail for normalized calculations
+# or percentages
+
+
+class AllFailureRecord(models.Model):
+    item_number_description = models.CharField(max_length=255)
+    date = models.DateTimeField()  # Assuming the existing date column is DateTimeField
+    user_name = models.CharField(max_length=100)
+    commodity = models.CharField(max_length=255, blank=True, null=True)  # Assuming commodity is stored separately
+    customer = models.CharField(max_length=30, default='unknown', blank=True, null=False)
+    submitted_date = models.DateField(blank=True, null=True)  # New column to store date only
+    final_score = models.CharField(max_length=20)
+
+    def __str__(self):
+        return f"{self.item_number_description} - {self.user_name} on {self.date}"
+
+    def save(self, *args, **kwargs):
+        if timezone.is_naive(self.date):
+            self.date = timezone.make_aware(self.date)
+        super().save(*args, **kwargs)
+
+
 
 #this is the customer sku table
 class customerSku(models.Model):

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import GrossFailure, FailureRecord
+from .models import GrossFailure, FailureRecord, AllFailureRecord
 from django.db.models import Count, Sum
 from django.db.models.functions import ExtractMonth
 from calendar import month_name
@@ -241,6 +241,51 @@ def snapshot_shelflife_this_month_commodities(request):
 
 
 
+def snapshot_shelflife_last_month_commodities(request):
+    # Get the month for last month
+    last_month = datetime.now() - relativedelta(months=1)
+
+    # Filter and annotate records for last month
+    records_last_month = FailureRecord.objects.filter(
+        date__year=last_month.year,
+        date__month=last_month.month
+    )
+
+    grouped_records = records_last_month.values(
+        'commodity'
+    ).annotate(failure_count=Count('id')).order_by('-failure_count')[:10]  # Get top 10
+
+    title = f"For the month of {last_month.strftime('%B')} (Previous month)"  # Adjust as needed
+
+    labels = [record['commodity'] for record in grouped_records]
+    counts = [record['failure_count'] for record in grouped_records]
+
+    chart_data = {'title': title, 'labels': labels, 'counts': counts}
+    return JsonResponse(chart_data)
+
+def snapshot_shelflife_two_months_ago_commodities(request):
+    # Get the month from two months ago
+    two_months_ago = datetime.now() - relativedelta(months=2)
+
+    # Filter and annotate records for two months ago
+    records_two_months_ago = FailureRecord.objects.filter(
+        date__year=two_months_ago.year,
+        date__month=two_months_ago.month
+    )
+
+    grouped_records = records_two_months_ago.values(
+        'commodity'
+    ).annotate(failure_count=Count('id')).order_by('-failure_count')[:10]  # Get top 10
+
+    title = f"For the month of {two_months_ago.strftime('%B')} (Two months ago)"  # Adjust as needed
+
+    labels = [record['commodity'] for record in grouped_records]
+    counts = [record['failure_count'] for record in grouped_records]
+
+    chart_data = {'title': title, 'labels': labels, 'counts': counts}
+    return JsonResponse(chart_data)
+
+
 def ajax_filter_view(request):
     # Fetch distinct values for dropdowns
     commodities = list(FailureRecord.objects.order_by('commodity').values_list('commodity', flat=True).distinct())
@@ -294,51 +339,6 @@ def ajax_filter_view(request):
         'earliest_date': earliest_date.strftime('%Y-%m-%d'),
         'latest_date': latest_date.strftime('%Y-%m-%d')
     })
-def snapshot_shelflife_last_month_commodities(request):
-    # Get the month for last month
-    last_month = datetime.now() - relativedelta(months=1)
-
-    # Filter and annotate records for last month
-    records_last_month = FailureRecord.objects.filter(
-        date__year=last_month.year,
-        date__month=last_month.month
-    )
-
-    grouped_records = records_last_month.values(
-        'commodity'
-    ).annotate(failure_count=Count('id')).order_by('-failure_count')[:10]  # Get top 10
-
-    title = f"For the month of {last_month.strftime('%B')} (Previous month)"  # Adjust as needed
-
-    labels = [record['commodity'] for record in grouped_records]
-    counts = [record['failure_count'] for record in grouped_records]
-
-    chart_data = {'title': title, 'labels': labels, 'counts': counts}
-    return JsonResponse(chart_data)
-
-def snapshot_shelflife_two_months_ago_commodities(request):
-    # Get the month from two months ago
-    two_months_ago = datetime.now() - relativedelta(months=2)
-
-    # Filter and annotate records for two months ago
-    records_two_months_ago = FailureRecord.objects.filter(
-        date__year=two_months_ago.year,
-        date__month=two_months_ago.month
-    )
-
-    grouped_records = records_two_months_ago.values(
-        'commodity'
-    ).annotate(failure_count=Count('id')).order_by('-failure_count')[:10]  # Get top 10
-
-    title = f"For the month of {two_months_ago.strftime('%B')} (Two months ago)"  # Adjust as needed
-
-    labels = [record['commodity'] for record in grouped_records]
-    counts = [record['failure_count'] for record in grouped_records]
-
-    chart_data = {'title': title, 'labels': labels, 'counts': counts}
-    return JsonResponse(chart_data)
-
-
 
 
 def rolling_yoy(request):
